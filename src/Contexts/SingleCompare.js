@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
-import { alignTimes, COIN_LIST, getZeroDerivativePoints, getAverageOfGains, getCounts, getCoinHistory, getHistoryTop300, getMinAndMaxPrices, getRatios, getPrices, removeZero } from '../helpers/api'
+import { alignTimes, COIN_LIST, getAverageOfGains, getCounts, getCoinHistory, getHistoryTop300, getMinAndMaxPrices, getRatios, getPrices, } from '../helpers/api'
+import { convertTime, travelPath, bossPoints, getZeroDerivativePoints, removeZero } from '../helpers/data'
 
 export const SingleCompareContext = React.createContext();
 
@@ -15,10 +16,16 @@ class SingleCompareProvider extends Component {
 
     async componentDidMount() {
         try {
-            const BTC_Times = await getRatios()
-            const singlePrice = await getCoinHistory('ENG')
-            const maxMins = await getZeroDerivativePoints(removeZero(singlePrice))
-            console.log(maxMins)
+            // const BTC_Times = await getRatios()
+            const singlePrice = await getCoinHistory('ICX')
+            const convertedTimes = {
+                symbol: singlePrice.symbol,
+                history: singlePrice.history.map(v => Object.assign(v, {date: convertTime(v.time)}))
+            }
+            const maxMins = getZeroDerivativePoints(removeZero(convertedTimes))
+            const withBosses = bossPoints(maxMins, 5, 5)
+            const betweenBosses = travelPath(withBosses)
+            console.log(betweenBosses)
             // const aligned = alignTimes(BTC_Times, removeZero(singlePrice))
             // console.log(aligned)
         } catch (error) {

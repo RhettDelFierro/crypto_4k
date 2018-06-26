@@ -1,11 +1,10 @@
 import axios from 'axios'
 import Promise from 'bluebird'
-import {LIMITS} from './constants'
+import {CONSTANTS} from './constants'
 
 const BTC = () => axios.get('https://min-api.cryptocompare.com/data/histoday?fsym=BTC&tsym=USD&limit=2000').then(_ => _)
 
 export const COIN_LIST = () => axios.get('https://min-api.cryptocompare.com/data/all/coinlist').then(_ => _)
-
 export const getCoinPricesMulti = (str) => axios.get(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=${str}&tsyms=BTC,USD,EUR`).then(_ => _) 
 export const getCoinHistory = (str) => axios.get(`https://min-api.cryptocompare.com/data/histoday?fsym=${str}&tsym=USD&limit=2000`).then(_ => ({symbol: str, history: _.data.Data}))
 
@@ -76,7 +75,7 @@ const promisesHistory = (arr) => arr.map((symbol) => {
                     .get(`https://min-api.cryptocompare.com/data/histoday?fsym=${symbol}&tsym=USD&limit=2000`)
                     .then(res => resolve(res))
                     .catch(err => reject(err)),
-            2 / LIMITS.HISTO.SECOND
+            2 / CONSTANTS.ByDays.HISTO.SECOND
         );
     });
 });
@@ -89,9 +88,6 @@ export const getHistoryTop300 = async (prices) => {
     // const reqs = await Promise.map(top300, getCoinHistory, {concurrency: 5})
     //return removeZeros(reqs)
 }
-
-export const getMinAndMaxPrices = (history) =>
-    history.reduce()
 
 export const removeZeros = historyData =>
     historyData.map(({symbol, history}) => ({
